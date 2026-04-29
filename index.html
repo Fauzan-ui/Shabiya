@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Shabiya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --black: #050505;
+            --card-bg: #111111;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: var(--black);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Greeting Animation */
+        #greeting-screen {
+            position: fixed;
+            z-index: 10;
+            text-align: center;
+            animation: fadeOut 1.5s ease-in-out forwards;
+            animation-delay: 3s;
+        }
+
+        #greeting-screen h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            font-size: 2.2rem;
+            letter-spacing: 5px;
+            opacity: 0;
+            animation: fadeIn 2s ease-in-out forwards;
+        }
+
+        /* Main Dashboard */
+        #main-content {
+            opacity: 0;
+            width: 90%;
+            max-width: 650px;
+            text-align: center;
+            animation: fadeIn 2.5s ease-in-out forwards;
+            animation-delay: 4.5s;
+            padding: 20px;
+        }
+
+        .gold-frame {
+            border: 1px solid var(--gold);
+            padding: 40px 20px;
+            background: var(--card-bg);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.05);
+            border-radius: 2px;
+        }
+
+        .label {
+            color: var(--gold);
+            font-family: 'Cinzel', serif;
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .text-box {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #d1d1d1;
+            margin-bottom: 25px;
+            font-weight: 300;
+        }
+
+        .separator {
+            height: 1px;
+            width: 60%;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 35px auto;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
+
+        .hadees-container { margin-bottom: 40px; }
+    </style>
+</head>
+<body>
+
+    <div id="greeting-screen">
+        <h1>Assalamualaikum, Shabiya</h1>
+    </div>
+
+    <div id="main-content">
+        <div class="gold-frame">
+            
+            <div class="hadees-container">
+                <span class="label">Sahih Bukhari • Wisdom I</span>
+                <div id="hadees1" class="text-box">Fetching guidance...</div>
+                
+                <span class="label">Sahih Bukhari • Wisdom II</span>
+                <div id="hadees2" class="text-box">Fetching guidance...</div>
+            </div>
+
+            <div class="separator"></div>
+
+            <div class="quote-container">
+                <span class="label">Daily Reflection for your Heart</span>
+                <div id="daily-quote" class="text-box" style="font-style: italic;">Calming your thoughts...</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // You can paste your 365 quotes here
+        const quotes = [
+            "Allah knows what is in every heart. You are never misunderstood by Him.",
+            "Let your overthinking be replaced by Dhikr. He is the best of planners.",
+            "Whatever is meant for you will find you, even if it is beneath two mountains.",
+            "Trust Him when things don't make sense. He sees the beautiful end you cannot see.",
+            "Peace is found in accepting that some things are only for Allah to handle.",
+            "Your soul is precious. Do not let worry steal the light Allah put inside you."
+            // Add more quotes to reach 365...
+        ];
+
+        async function loadContent() {
+            const totalHadees = 7563;
+            const twelveHours = 12 * 60 * 60 * 1000;
+            
+            // 12-hour block logic
+            const currentBlock = Math.floor(Date.now() / twelveHours);
+            const id1 = (currentBlock % totalHadees) + 1;
+            const id2 = ((currentBlock + 1) % totalHadees) + 1;
+
+            // Fetch 2 Hadees
+            try {
+                const res1 = await fetch(`https://hadith-api.com/api/hadiths?collection=sahih-bukhari&hadith=${id1}`);
+                const data1 = await res1.json();
+                document.getElementById('hadees1').innerText = data1.hadithEnglish;
+
+                const res2 = await fetch(`https://hadith-api.com/api/hadiths?collection=sahih-bukhari&hadith=${id2}`);
+                const data2 = await res2.json();
+                document.getElementById('hadees2').innerText = data2.hadithEnglish;
+            } catch (e) {
+                document.getElementById('hadees1').innerText = "Verily, after hardship comes ease.";
+                document.getElementById('hadees2').innerText = "Allah is with the patient.";
+            }
+
+            // 24-hour Quote logic (Changes once per calendar day)
+            const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+            document.getElementById('daily-quote').innerText = quotes[dayOfYear % quotes.length];
+        }
+
+        loadContent();
+    </script>
+</body>
+</html>
